@@ -31,7 +31,7 @@ TU_DIEN_NHOM = {
     "pentest-tools": ["pentest", "scan", "nmap", "sqlmap", "nuclei", "ffuf", "burp", "tan cong", "lo hong"],
     "api-security": ["api", "rest", "graphql", "endpoint", "swagger", "postman"],
     "code-review": ["review code", "soat code", "kiem tra code", "danh gia code", "pr review"],
-    "tdd": ["tdd", "test driven", "viet test", "unit test", "integration test"],
+    "tdd": ["tdd", "test driven", "test-driven", "red green", "red-green-refactor", "viet test truoc", "test truoc khi code", "unit test", "integration test", "seam test"],
     "diagnosing-bugs": ["debug", "loi", "bug", "crash", "trace error", "chan doan loi", "exception"],
     "ui-ux-pro-max": ["ui", "ux", "giao dien", "design system", "frontend layout", "mau sac", "css", "tailwind"],
     "ui-styling": ["styling", "shadcn", "component ui", "button", "modal", "card"],

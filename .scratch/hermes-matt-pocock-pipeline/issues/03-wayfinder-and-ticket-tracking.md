@@ -1,6 +1,6 @@
 # Issue 03: Tự động điều phối và xử lý frontier tickets qua Wayfinder
 
-Status: ready-for-agent
+Status: resolved
 Type: task
 Blocked by: 02
 
