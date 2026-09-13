@@ -5,6 +5,7 @@ import os
 import sys
 import json
 import time
+import re
 import urllib.request
 from pathlib import Path
 
@@ -17,15 +18,65 @@ if sys.platform == "win32":
         pass
 
 
+def tim_goc_repo(duong_dan):
+    """Tim thu muc goc cua repo dua vao cac dau hieu .git, Cargo.toml, package.json."""
+    try:
+        p = Path(duong_dan).resolve()
+        if p.is_file():
+            p = p.parent
+        for cha in [p] + list(p.parents):
+            if any((cha / m).exists() for m in [".git", "Cargo.toml", "package.json", "pyproject.toml", "pom.xml"]):
+                return str(cha)
+        return str(p)
+    except Exception:
+        return str(duong_dan)
+
+
+def dam_bao_repo_da_index(goc_repo):
+    """Tu dong dang ky va index kho moi vao Context Engine qua REST API neu chua co."""
+    try:
+        goc_chuan = str(Path(goc_repo).resolve())
+        # 1. Doc danh sach repos tu /api/config
+        yeu_cau_cfg = urllib.request.Request("http://127.0.0.1:6699/api/config")
+        with urllib.request.urlopen(yeu_cau_cfg, timeout=3.0) as res:
+            cfg = json.loads(res.read().decode("utf-8"))
+            ds_repos = cfg.get("repos", [])
+
+        # 2. Neu chua co, them vao va PUT /api/config
+        if not any(r.lower() == goc_chuan.lower() for r in ds_repos):
+            cfg["repos"].append(goc_chuan)
+            yeu_cau_put = urllib.request.Request(
+                "http://127.0.0.1:6699/api/config",
+                method="PUT",
+                headers={"Content-Type": "application/json"},
+                data=json.dumps(cfg).encode("utf-8")
+            )
+            urllib.request.urlopen(yeu_cau_put, timeout=5.0)
+
+            # 3. Kich hoat index cho kho moi
+            import base64
+            ma_id = base64.urlsafe_b64encode(goc_chuan.encode("utf-8")).decode("utf-8").rstrip("=")
+            yeu_cau_idx = urllib.request.Request(
+                f"http://127.0.0.1:6699/api/repos/{ma_id}/index",
+                method="POST"
+            )
+            urllib.request.urlopen(yeu_cau_idx, timeout=5.0)
+    except Exception:
+        pass
+
+
 def truy_van_context_engine(truy_van, duong_dan_repo):
     """Goi API cua Context Engine Master Router de lay ngu canh ngu nghia va AST."""
     if not truy_van or not str(truy_van).strip():
         return []
 
+    goc_repo = tim_goc_repo(duong_dan_repo)
+    dam_bao_repo_da_index(goc_repo)
+
     url = "http://127.0.0.1:6699/api/query"
     du_lieu_gui = {
         "query": str(truy_van).strip(),
-        "repo": str(Path(duong_dan_repo).resolve()).lower()
+        "repo": goc_repo.lower()
     }
 
     try:
@@ -34,7 +85,7 @@ def truy_van_context_engine(truy_van, duong_dan_repo):
             headers={"Content-Type": "application/json"},
             data=json.dumps(du_lieu_gui).encode("utf-8")
         )
-        with urllib.request.urlopen(yeu_cau, timeout=8.0) as phan_hoi:
+        with urllib.request.urlopen(yeu_cau, timeout=14.0) as phan_hoi:
             if phan_hoi.status == 200:
                 kq = json.loads(phan_hoi.read().decode("utf-8", errors="replace"))
                 return kq.get("results", [])
@@ -84,14 +135,32 @@ def main():
     ma_phien = du_lieu.get("conversationId", "phien_chua_ro")
     ds_ws = du_lieu.get("workspacePaths", [])
 
-    # Trich xuat tu khoa tim kiem
-    truy_van = tham_so.get("Query") or tham_so.get("Pattern") or ""
+    # Trich xuat tu khoa tim kiem tu Query (grep_search) hoac Pattern (find_by_name)
+    truy_van_goc = tham_so.get("Query") or tham_so.get("Pattern") or ""
+    # Lam sach neu la Pattern dang glob (vi du: *benchmark*.py -> benchmark)
+    truy_van = re.sub(r'[*?]+', ' ', str(truy_van_goc)).strip()
+    if "." in truy_van:
+        truy_van = re.sub(r'\.(py|js|ts|json|md|rs|go|java|c|cpp|h|txt)$', '', truy_van, flags=re.IGNORECASE).strip()
+    if not truy_van:
+        truy_van = str(truy_van_goc).strip()
+
     # Xac dinh thu muc tim kiem
     duong_dan = (
         tham_so.get("SearchPath")
         or tham_so.get("SearchDirectory")
         or (ds_ws[0] if ds_ws else os.getcwd())
     )
+
+    goc_repo = tim_goc_repo(duong_dan)
+    # Tu dong cap nhat active workspace cho MCP Gateway va Bridge
+    try:
+        tep_ws = Path(os.environ.get("USERPROFILE", "C:/Users/Home33")) / ".gemini" / "active_workspace.txt"
+        tep_ws.parent.mkdir(parents=True, exist_ok=True)
+        tep_ws.write_text(goc_repo, encoding="utf-8")
+        tep_ws2 = Path(__file__).resolve().parent.parent / "active_repo.txt"
+        tep_ws2.write_text(goc_repo, encoding="utf-8")
+    except Exception:
+        pass
 
     ds_ket_qua = []
     if truy_van:
@@ -115,11 +184,33 @@ def main():
     except Exception:
         pass
 
-    # Tao ly do phan hoi hop dong PreToolUse
+    # Tao ly do phan hoi hop dong PreToolUse kem toan bo code snippets de Agent doc truc tiep
     if so_kq > 0:
-        mo_ta = f"[CONTEXT ENGINE BO SUNG]: Da kich hoat tu dong voi '{truy_van}', tim thay {so_kq} vi tri code phu hop."
+        cac_doan_ma = []
+        for i, item in enumerate(ds_ket_qua[:5], 1):
+            tep = item.get("file", "")
+            d_dau = item.get("line_start", "")
+            d_cuoi = item.get("line_end", "")
+            diem = item.get("score")
+            diem_str = f"{diem:.3f}" if isinstance(diem, (int, float)) else "N/A"
+            nd = item.get("content", "").strip()
+            if len(nd) > 1200:
+                nd = nd[:1200] + "\n... [con tiep]"
+            cac_doan_ma.append(f"--- [Snippet #{i}] Tep: {tep} (Dong {d_dau}-{d_cuoi}) [Score: {diem_str}] ---\n{nd}")
+
+        chuoi_snippets = "\n\n".join(cac_doan_ma)
+        mo_ta = (
+            f"[CONTEXT ENGINE DA KICH HOAT - AGENT BAT BUOC DOC VA PHAN TICH NGAY]:\n"
+            f"Khi goi {ten_tool} ('{truy_van}'), Context Engine da tu dong tim thay {so_kq} vi tri code lien quan trong kho [{goc_repo}].\n"
+            f"Duoi day la Top {len(cac_doan_ma)} doan ma ngu nghia quan trong nhat duoc trich xuat san de Agent doc truc tiep:\n\n"
+            f"{chuoi_snippets}\n\n"
+            f"=> CHI THI: Agent phai doc, doi chieu truc tiep cac doan ma tren va trich dan so dong, tep cu the khi phan hoi."
+        )
     else:
-        mo_ta = f"[CONTEXT ENGINE BO SUNG]: Da kich hoat voi '{truy_van}', tiep tuc chay grep song hanh."
+        mo_ta = (
+            f"[CONTEXT ENGINE]: Da kich hoat tim kiem ngu nghia cho '{truy_van}' trong kho [{goc_repo}] "
+            f"nhung khong tim thay doan ma phu hop (0 ket qua). Tiep tuc thuc thi {ten_tool} song hanh."
+        )
 
     phan_hoi = {
         "decision": "allow",

@@ -16,26 +16,52 @@ if sys.platform == "win32":
         pass
 
 
-def tim_repo_hien_tai():
-    """Xac dinh thu muc repo dang lam viec dua tren CWD hoac cau hinh."""
+def tim_thu_muc_goc(duong_dan):
+    """Tim thu muc goc cua repo dua tren .git, Cargo.toml, package.json."""
+    try:
+        p = Path(duong_dan).resolve()
+        if p.is_file():
+            p = p.parent
+        for cha in [p] + list(p.parents):
+            if any((cha / m).exists() for m in [".git", "Cargo.toml", "package.json", "pyproject.toml", "pom.xml"]):
+                return str(cha)
+        return str(p)
+    except Exception:
+        return str(duong_dan)
+
+
+def tim_repo_hien_tai(goi_y_tep=None):
+    """Xac dinh thu muc repo dang lam viec dua tren goi y tep, runtime state hoac CWD."""
+    if goi_y_tep:
+        return tim_thu_muc_goc(goi_y_tep)
+
+    # 1. Kiem tra active_workspace.txt tu hook
+    tep_ws = Path(os.environ.get("USERPROFILE", "C:/Users/Home33")) / ".gemini" / "active_workspace.txt"
+    if tep_ws.exists():
+        try:
+            nd = tep_ws.read_text(encoding="utf-8").strip()
+            if nd and Path(nd).exists():
+                return tim_thu_muc_goc(nd)
+        except Exception:
+            pass
+
+    # 2. Kiem tra active_repo.txt
+    tep_repo = Path(r"C:\Tools\hermes-agent\.agents\active_repo.txt")
+    if tep_repo.exists():
+        try:
+            nd = tep_repo.read_text(encoding="utf-8").strip()
+            if nd and Path(nd).exists():
+                return tim_thu_muc_goc(nd)
+        except Exception:
+            pass
+
     cwd = str(Path.cwd().resolve()).lower()
-    # Kiem tra cac repo pho bien
     if "chatcmd" in cwd:
         return r"c:\tools\chatcmd"
     if "hermes" in cwd:
         return r"c:\tools\hermes-agent"
 
-    # Neu co tep chi dinh repo hoat dong
-    tep_repo = Path(r"C:\Tools\hermes-agent\.agents\active_repo.txt")
-    if tep_repo.exists():
-        try:
-            nd = tep_repo.read_text(encoding="utf-8").strip()
-            if nd:
-                return nd
-        except Exception:
-            pass
-
-    return cwd
+    return tim_thu_muc_goc(cwd)
 
 
 def goi_api_context_engine(truy_van, tm_repo):
@@ -186,8 +212,9 @@ def xu_ly_yeu_cau(yeu_cau):
         if ten_tool == "file-retrieval":
             tep = doi_so.get("file_path", "")
             yeu_cau_tt = doi_so.get("information_request", "")
+            tm_repo_tep = tim_repo_hien_tai(goi_y_tep=tep)
             truy_van_hop_nhat = f"{tep} {yeu_cau_tt}"
-            kq = goi_api_context_engine(truy_van_hop_nhat, tm_repo)
+            kq = goi_api_context_engine(truy_van_hop_nhat, tm_repo_tep)
             # Loc ket qua theo file neu co
             if isinstance(kq, list):
                 kq_loc = [m for m in kq if tep.lower() in m.get("file", "").lower()]

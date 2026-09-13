@@ -1,0 +1,58 @@
+{
+  "thoi_gian": 1789296676.8281963,
+  "ten_tool": "find_by_name",
+  "truy_van": "benchmark",
+  "duong_dan": "C:\\Tools\\hermes-agent",
+  "ket_qua": [
+    {
+      "file": "c:\\tools\\hermes-agent\\scripts\\benchmark_browser_eval.py",
+      "line_start": 1,
+      "line_end": 66,
+      "score": 0.45710227,
+      "content": "1: \"\"\"Quick benchmark: subprocess eval vs supervisor-WS eval.\n2: \n3: Runs both paths against the same live Chrome and prints a comparison table.\n4: Not a pytest — a script you run manually for the PR description.\n5: \n6: Usage:\n7:     .venv/bin/python scripts/benchmark_browser_eval.py [--iterations N]\n8: \"\"\"\n9: from __future__ import annotations\n10: \n11: import argparse\n12: import shutil\n13: import statistics\n14: import subprocess\n15: import sys\n16: import tempfile\n17: import time\n18: import urllib.request\n19: import json\n20: \n21: \n22: def _find_chrome() -> str:\n23:     for c in (\"google-chrome\", \"chromium\", \"chromium-browser\"):\n24:         p = shutil.which(c)\n25:         if p:\n26:             return p\n27:     print(\"No Chrome binary found.\", file=sys.stderr)\n28:     sys.exit(1)\n29: \n30: \n31: def _start_chrome(port: int):\n32:     profile = tempfile.mkdtemp(prefix=\"hermes-bench-eval-\")\n33:     proc = subprocess.Popen(\n34:         [\n35:             _find_chrome(),\n36:             f\"--remote-debugging-port={port}\",\n37:             f\"--user-data-dir={profile}\",\n38:             \"--no-first-run\",\n39:             \"--no-default-browser-check\",\n40:             \"--headless=new\",\n41:             \"--disable-gpu\",\n42:         ],\n43:         stdout=subprocess.DEVNULL,\n44:         stderr=subprocess.DEVNULL,\n45:     )\n46:     deadline = time.monotonic() + 15\n47:     while time.monotonic() < deadline:\n48:         try:\n49:             with urllib.request.urlopen(f\"http://127.0.0.1:{port}/json/version\", timeout=1) as r:\n50:                 info = json.loads(r.read().decode())\n51:                 return proc, profile, info[\"webSocketDebuggerUrl\"]\n52:         except Exception:\n53:             time.sleep(0.25)\n54:     proc.terminate()\n55:     raise RuntimeError(\"Chrome didn't expose CDP\")\n56: \n57: \n58: def main():\n59:     parser = argparse.ArgumentParser()\n60:     parser.add_argument(\"--iterations\", type=int, default=50)\n61:     parser.add_argument(\"--port\", type=int, default=9333)\n62:     args = parser.parse_args()\n63: \n64:     proc, profile, cdp_url = _start_chrome(args.port)\n65:     try:\n66:         from tools.browser_supervisor import SUPERVISOR_REGISTRY",
+      "symbol": null
+    },
+    {
+      "file": "c:\\tools\\hermes-agent\\scripts\\benchmark_browser_eval.py",
+      "line_start": 66,
+      "line_end": 118,
+      "score": 0.47021937,
+      "content": "66:         from tools.browser_supervisor import SUPERVISOR_REGISTRY\n67: \n68:         # Warm up: start the supervisor, navigate to a page.\n69:         supervisor = SUPERVISOR_REGISTRY.get_or_start(\n70:             task_id=\"bench-eval\", cdp_url=cdp_url\n71:         )\n72:         # Give it a moment to attach.\n73:         time.sleep(1.0)\n74: \n75:         # Sanity check: one eval over WS should succeed.\n76:         sanity = supervisor.evaluate_runtime(\"1 + 1\")\n77:         if not sanity.get(\"ok\") or sanity.get(\"result\") != 2:\n78:             print(f\"sanity check failed: {sanity}\", file=sys.stderr)\n79:             sys.exit(2)\n80: \n81:         # ── Bench 1: supervisor WS path ──────────────────────────────────\n82:         ws_times: list[float] = []\n83:         for _ in range(args.iterations):\n84:             t0 = time.monotonic()\n85:             out = supervisor.evaluate_runtime(\"1 + 1\")\n86:             t1 = time.monotonic()\n87:             assert out.get(\"ok\"), out\n88:             ws_times.append((t1 - t0) * 1000)\n89: \n90:         # ── Bench 2: agent-browser subprocess path ────────────────────────\n91:         # Skip if agent-browser isn't installed — the WS bench still tells\n92:         # us what we need.\n93:         if shutil.which(\"agent-browser\") is None and shutil.which(\"npx\") is None:\n94:             print(\"agent-browser CLI not found — skipping subprocess bench.\")\n95:             sub_times = []\n96:         else:\n97:             from tools.browser_tool_session import _run_browser_command\n98:             from tools.browser_tool import _last_session_key\n99:             task_id = _last_session_key(\"bench-eval\")\n100:             sub_times = []\n101:             for _ in range(args.iterations):\n102:                 t0 = time.monotonic()\n103:                 _run_browser_command(task_id, \"eval\", [\"1 + 1\"])\n104:                 t1 = time.monotonic()\n105:                 sub_times.append((t1 - t0) * 1000)\n106: \n107:         def fmt(name: str, ts: list[float]) -> str:\n108:             if not ts:\n109:                 return f\"  {name:<40} (skipped)\"\n110:             mean = statistics.mean(ts)\n111:             median = statistics.median(ts)\n112:             mn, mx = min(ts), max(ts)\n113:             return (\n114:                 f\"  {name:<40} mean={mean:>7.2f}ms  median={median:>7.2f}ms  \"\n115:                 f\"min={mn:>7.2f}ms  max={mx:>7.2f}ms\"\n116:             )\n117: \n118:         print()",
+      "symbol": "main",
+      "callers": 0,
+      "caller_files": 0,
+      "callee_names": [
+        "_start_chrome",
+        "fmt",
+        "_last_session_key",
+        "_run_browser_command",
+        "print"
+      ],
+      "callees": 14
+    },
+    {
+      "file": "c:\\tools\\hermes-agent\\scripts\\benchmark_browser_eval.py",
+      "line_start": 118,
+      "line_end": 139,
+      "score": 0.49535537,
+      "content": "118:         print()\n119:         print(f\"browser_eval benchmark — {args.iterations} iterations of `1 + 1`\")\n120:         print(\"-\" * 90)\n121:         print(fmt(\"supervisor WS (Runtime.evaluate)\", ws_times))\n122:         print(fmt(\"agent-browser subprocess (eval)\", sub_times))\n123:         if ws_times and sub_times:\n124:             speedup = statistics.mean(sub_times) / statistics.mean(ws_times)\n125:             print()\n126:             print(f\"Speedup: {speedup:.1f}x (mean)\")\n127: \n128:     finally:\n129:         SUPERVISOR_REGISTRY.stop_all()\n130:         proc.terminate()\n131:         try:\n132:             proc.wait(timeout=3)\n133:         except Exception:\n134:             proc.kill()\n135:         shutil.rmtree(profile, ignore_errors=True)\n136: \n137: \n138: if __name__ == \"__main__\":\n139:     main()",
+      "symbol": null
+    },
+    {
+      "file": "c:\\tools\\hermes-agent\\scripts\\tool_search_livetest2.py",
+      "line_start": 192,
+      "line_end": 218,
+      "score": 0.4782996,
+      "content": "192:     return rec\n193: \n194: \n195: def main():\n196:     out_dir = _THIS_DIR / \"out2\"\n197:     out_dir.mkdir(exist_ok=True)\n198:     modes = [m for m in os.environ.get(\"TS_BENCH_MODES\", \"enabled,listing,disabled\").split(\",\") if m]\n199:     rows = []\n200:     for scenario in SCENARIOS:\n201:         for mode in modes:\n202:             for rep in range(1, N_REPS + 1):\n203:                 rec = run_one(scenario, mode, rep, out_dir)\n204:                 print(f\"{scenario['id']:24} {mode:8} rep{rep}: \"\n205:                       f\"api={rec['api_calls']} in={rec['prompt_tokens_total']:>7} \"\n206:                       f\"out={rec['completion_tokens_total']:>5} cached={rec['cached_tokens_total']:>7} \"\n207:                       f\"t={rec['elapsed_seconds']:>5}s ok={rec['success']} err={bool(rec['error'])}\",\n208:                       flush=True)\n209:                 rows.append(rec)\n210:     summary_name = os.environ.get(\"TS_BENCH_SUMMARY\", \"_bench_summary.json\")\n211:     (out_dir / summary_name).write_text(json.dumps(\n212:         [{k: v for k, v in r.items() if k not in (\"per_call_usage\", \"bridge_calls\", \"final_response\")} for r in rows],\n213:         indent=1), encoding=\"utf-8\")\n214:     print(\"done ->\", out_dir / summary_name)\n215: \n216: \n217: if __name__ == \"__main__\":\n218:     main()",
+      "symbol": null
+    },
+    {
+      "file": "c:\\tools\\hermes-agent\\scripts\\tool_search_livetest_ue.py",
+      "line_start": 269,
+      "line_end": 296,
+      "score": 0.43213058,
+      "content": "269:     return rec\n270: \n271: \n272: def main():\n273:     out_dir = _THIS_DIR / \"out_ue\"\n274:     out_dir.mkdir(exist_ok=True)\n275:     scale = os.environ.get(\"TS_UE_SCALE\", \"full\")\n276:     modes = [m for m in os.environ.get(\"TS_UE_MODES\", \"listing,bridge,eager\").split(\",\") if m]\n277:     rows = []\n278:     for scenario in SCENARIOS:\n279:         if scenario.get(\"full_only\") and scale != \"full\":\n280:             continue\n281:         for mode in modes:\n282:             for rep in range(1, N_REPS + 1):\n283:                 rec = run_one(scenario, mode, scale, rep, out_dir)\n284:                 print(f\"{scenario['id']:18} {mode:8} {scale:6} rep{rep}: api={rec['api_calls']} \"\n285:                       f\"in={rec['prompt_tokens_total']:>8,} t={rec['elapsed_seconds']:>6}s \"\n286:                       f\"ok={rec['success']} err={bool(rec['error'])}\", flush=True)\n287:                 rows.append(rec)\n288:     name = os.environ.get(\"TS_UE_SUMMARY\", f\"_ue_bench_{scale}.json\")\n289:     (out_dir / name).write_text(json.dumps(\n290:         [{k: v for k, v in r.items() if k not in (\"per_call_usage\", \"bridge_calls\", \"final_response\")} for r in rows],\n291:         indent=1), encoding=\"utf-8\")\n292:     print(\"done ->\", out_dir / name)\n293: \n294: \n295: if __name__ == \"__main__\":\n296:     main()",
+      "symbol": null
+    }
+  ]
+}
