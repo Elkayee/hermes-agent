@@ -5,6 +5,7 @@ import os
 import sys
 import json
 import re
+import unicodedata
 from pathlib import Path
 
 # Dam bao terminal Windows khong bi loi ma hoa tieng Viet
@@ -36,7 +37,21 @@ TU_DIEN_NHOM = {
     "ui-styling": ["styling", "shadcn", "component ui", "button", "modal", "card"],
     "banner-design": ["banner", "poster", "quang cao", "graphic design"],
     "diagram-generator": ["so do", "diagram", "mermaid", "flowchart", "kien truc", "sequence diagram"],
-    "find-skills": ["find skill", "cai skill", "tim skill", "mo rong", "skill moi", "npx skills"]
+    "find-skills": ["find skill", "cai skill", "tim skill", "mo rong", "skill moi", "npx skills"],
+    # Bo quy trinh Engineering Skills cua Matt Pocock
+    "setup-matt-pocock-skills": ["setup pocock", "setup engineering skills", "setup issue tracker", "khoi tao issue tracker", "khoi tao quy trinh matt"],
+    "to-tickets": ["to-tickets", "ticket", "tickets", "chia task", "che nho task", "be nho task", "chia nho cong viec", "vertical slice", "tracer bullet", "blocking edges", "blocking edge"],
+    "to-spec": ["to-spec", "lap spec", "tao spec", "viet spec", "lap dac ta", "viet dac ta", "tao dac ta", "dac ta", "spec tinh nang", "chuyen hoi thoai thanh spec", "turn into spec"],
+    "implement-spec": ["implement-spec", "trien khai spec", "trien khai dac ta", "thuc thi dac ta", "code theo spec", "code dac ta", "trien khai code", "implement specification", "code spec"],
+    "triage": ["triage", "phan loai issue", "gan nhan triage", "triage label", "triage roles", "phan loai pr", "state machine triage"],
+    "codebase-design": ["codebase-design", "deep module", "deep modules", "module sau", "ousterhout", "thiet ke module", "information hiding", "deep interface"],
+    "domain-modeling": ["domain-modeling", "mo hinh nghiep vu", "domain model", "glossary", "adr", "context map", "thuat ngu domain"],
+    "grill-me": ["grill-me", "phan bien", "chat van", "hoi xoay", "gat gao", "danh gia gat gao", "relentless interview", "stress test y tuong"],
+    "grilling": ["grilling", "grill", "phan bien gat gao", "chat van ke hoach", "hoi xoay y tuong"],
+    "prototype": ["prototype", "lam thu", "ban thu nghiem", "throwaway prototype", "kiem chung nhanh", "poc nhanh"],
+    "retro": ["retro", "retrospective", "tong ket phien", "rut kinh nghiem", "danh gia phien lam viec", "coding retrospective"],
+    "setup-ts-deep-modules": ["setup-ts-deep-modules", "dependency cruiser", "deep module ts", "kiem tra kien truc ts"],
+    "improve-codebase-architecture": ["improve-codebase-architecture", "cai thien kien truc", "quet module", "bao cao kien truc", "deepening report"]
 }
 
 
@@ -100,39 +115,53 @@ def lay_prompt_tu_transcript(duong_dan_ts):
     return xau_yc
 
 
+def bo_dau_tieng_viet(xau):
+    """Chuyen chuoi tieng Viet co dau thanh khong dau de so khop tu nhien."""
+    if not xau:
+        return ""
+    xau = xau.replace("đ", "d").replace("Đ", "D")
+    xau_nfd = unicodedata.normalize("NFD", xau)
+    return "".join(c for c in xau_nfd if unicodedata.category(c) != "Mn")
+
+
 def tinh_diem_phu_hop(xau_yc, kn):
     """Cham diem muc do phu hop cua skill dua tren yeu cau cua nguoi dung."""
     if not xau_yc:
         return 0
 
     yc_thg = xau_yc.lower()
+    yc_khong_dau = bo_dau_tieng_viet(yc_thg)
     ten_kn = kn["ten"].lower()
     mo_ta_kn = kn["mo_ta"].lower()
     diem = 0
 
     # 1. Ten skill xuat hien truc tiep
-    if ten_kn in yc_thg:
+    if ten_kn in yc_thg or ten_kn in yc_khong_dau:
         diem += 50
 
-    # 2. Khop tu khoa dac trung trong tu dien (dung word boundary tranh khop nham substring nhu 'pe' trong 'pipeline')
+    # 2. Khop tu khoa dac trung trong tu dien (ho tro ca co dau va khong dau)
     if ten_kn in TU_DIEN_NHOM:
         for tk in TU_DIEN_NHOM[ten_kn]:
+            tk_thg = tk.lower()
+            tk_khong_dau = bo_dau_tieng_viet(tk_thg)
             if len(tk) <= 3:
-                if re.search(r"\b" + re.escape(tk) + r"\b", yc_thg):
-                    diem += 15
+                if (re.search(r"\b" + re.escape(tk_thg) + r"\b", yc_thg) or 
+                    re.search(r"\b" + re.escape(tk_khong_dau) + r"\b", yc_khong_dau)):
+                    diem += 25
             else:
-                if tk in yc_thg:
-                    diem += 15
+                if tk_thg in yc_thg or tk_khong_dau in yc_khong_dau:
+                    diem += 25
 
     # 3. Khop cac tu rieng le cua ten skill
     cac_tu_ten = ten_kn.replace("-", " ").split()
     for tu in cac_tu_ten:
         if len(tu) > 2:
-            if re.search(r"\b" + re.escape(tu) + r"\b", yc_thg):
+            if (re.search(r"\b" + re.escape(tu) + r"\b", yc_thg) or 
+                re.search(r"\b" + re.escape(tu) + r"\b", yc_khong_dau)):
                 diem += 8
 
     # 4. Khop mot phan mo ta
-    cac_tu_yc = re.findall(r"\w+", yc_thg)
+    cac_tu_yc = re.findall(r"\w+", yc_khong_dau)
     for tu in set(cac_tu_yc):
         if len(tu) >= 4 and tu in mo_ta_kn:
             diem += 2
