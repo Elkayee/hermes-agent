@@ -87,7 +87,10 @@ def xu_ly_kich_hoat_harness():
     thong_bao_harness = (
         "[HARNESS TRIGGERED]: Quy trinh thuc thi tu dong da duoc kich hoat.\n"
         "Yeu cau: 1) Kiem tra loi tung buoc; 2) Dung cong cu toi thieu; "
-        "3) Tu kiem chung ket qua truoc khi phan hoi nguoi dung."
+        "3) Tu kiem chung ket qua truoc khi phan hoi nguoi dung;\n"
+        "4) NGUYEN TAC GOI TOOL CONTEXT ENGINE (ONE-WAY COUPLING):\n"
+        "   - Khi Agent kich hoat Grep / Search (grep_search, find_by_name) -> BAT BUOC phai kich hoat Context Engine di kem (qua codebase-retrieval / file-retrieval hoac hook tu dong) de soi chieu AST va vector ngu nghia.\n"
+        "   - Nguoc lai, khi Agent da chu dong dung Context Engine -> HOAN TOAN KHONG CAN kich hoat Grep / Search."
     )
 
     cac_phan = [thong_bao_harness]

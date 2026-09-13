@@ -8,5 +8,20 @@
         "timeout": 15
       }
     ]
+  },
+  "context-engine-auto-activator": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "grep_search|find_by_name",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/kich_hoat_context_khi_search.py",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
   }
 }
