@@ -83,7 +83,15 @@ def xu_ly_kich_hoat_harness():
     except Exception as loi:
         khoi_nho = f"[!] Khong the nap memory context: {str(loi)}"
 
-    # 6. Hop nhat thong diep Harness, Skills Router, Memory Context va Smart Recall
+    # 5b. Tu dong nap khoi <project-context> (AGENTS.md, plan.md, task.md / Wayfinder Tickets)
+    khoi_du_an = ""
+    try:
+        from bo_kich_hoat_context_du_an import tao_khoi_du_an_harness
+        khoi_du_an = tao_khoi_du_an_harness(du_lieu)
+    except Exception as loi_da:
+        khoi_du_an = f"[!] Khong the nap project context: {str(loi_da)}"
+
+    # 6. Hop nhat thong diep Harness, Skills Router, Memory Context, Project Context va Smart Recall
     thong_bao_harness = (
         "[HARNESS TRIGGERED]: Quy trinh thuc thi tu dong da duoc kich hoat.\n"
         "Yeu cau: 1) Kiem tra loi tung buoc; 2) Dung cong cu toi thieu; "
@@ -100,6 +108,8 @@ def xu_ly_kich_hoat_harness():
         cac_phan.append(xau_hoi_tuong)
     if khoi_nho:
         cac_phan.append(khoi_nho)
+    if khoi_du_an:
+        cac_phan.append(khoi_du_an)
 
     thong_diep_tong = "\n\n".join(cac_phan)
 

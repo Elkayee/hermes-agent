@@ -365,3 +365,10 @@
 {"thoi_gian": 1789296404.69, "thoi_diem": "17:46:44 13/09/2026", "ma_phien": "test-direct-3", "su_kien": "BO_SUNG_CONTEXT_ENGINE_KHI_SEARCH", "ten_tool": "grep_search", "truy_van": "harness benchmark", "duong_dan": "C:\\Tools\\hermes-agent", "so_ket_qua_ngu_nghia": 29}
 {"thoi_gian": 1789296582.24, "thoi_diem": "17:49:42 13/09/2026", "ma_phien": "test-direct-4", "su_kien": "BO_SUNG_CONTEXT_ENGINE_KHI_SEARCH", "ten_tool": "grep_search", "truy_van": "harness benchmark", "duong_dan": "C:\\Tools\\hermes-agent", "so_ket_qua_ngu_nghia": 29}
 {"thoi_gian": 1789296676.83, "thoi_diem": "17:51:16 13/09/2026", "ma_phien": "test-find-by-name", "su_kien": "BO_SUNG_CONTEXT_ENGINE_KHI_SEARCH", "ten_tool": "find_by_name", "truy_van": "benchmark", "duong_dan": "C:\\Tools\\hermes-agent", "so_ket_qua_ngu_nghia": 27}
+{"thoi_gian": 1789300880.51, "thoi_diem": "19:01:20 13/09/2026", "ma_phien": "phien_chua_ro", "so_luot": 1, "trang_thai": "DA_KICH_HOAT", "skill_kich_hoat": "find-skills"}
+{"thoi_gian": 1789300979.26, "thoi_diem": "19:02:59 13/09/2026", "ma_phien": "phien_chua_ro", "so_luot": 1, "trang_thai": "DA_KICH_HOAT", "skill_kich_hoat": "find-skills"}
+{"thoi_gian": 1789300984.38, "thoi_diem": "19:03:04 13/09/2026", "ma_phien": "phien_chua_ro", "so_luot": 1, "trang_thai": "DA_KICH_HOAT", "skill_kich_hoat": "find-skills"}
+{"thoi_gian": 1789300988.58, "thoi_diem": "19:03:08 13/09/2026", "ma_phien": "phien_chua_ro", "so_luot": 1, "trang_thai": "DA_KICH_HOAT", "skill_kich_hoat": "find-skills"}
+{"thoi_gian": 1789300993.56, "thoi_diem": "19:03:13 13/09/2026", "ma_phien": "phien_chua_ro", "so_luot": 1, "trang_thai": "DA_KICH_HOAT", "skill_kich_hoat": "find-skills"}
+{"thoi_gian": 1789301000.22, "thoi_diem": "19:03:20 13/09/2026", "ma_phien": "phien_chua_ro", "so_luot": 1, "trang_thai": "DA_KICH_HOAT", "skill_kich_hoat": "find-skills"}
+{"thoi_gian": 1789301336.05, "thoi_diem": "19:08:56 13/09/2026", "ma_phien": "phien_chua_ro", "so_luot": 1, "trang_thai": "DA_KICH_HOAT", "skill_kich_hoat": "find-skills"}
