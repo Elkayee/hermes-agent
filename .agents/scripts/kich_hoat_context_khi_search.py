@@ -49,14 +49,13 @@ def dam_bao_context_engine_hoat_dong():
 
     import subprocess
     try:
-        DETACHED_PROCESS = 0x00000008
-        CREATE_NO_WINDOW = 0x08000000
-        subprocess.Popen(
-            [str(tep_bin), "--port", "6699", "--bind", "127.0.0.1"],
-            creationflags=DETACHED_PROCESS | CREATE_NO_WINDOW,
-            close_fds=True
-        )
-        for _ in range(10):
+        # Uu tien 1: Khoi chay qua Scheduled Task cua Windows (doc lap 100% tien trinh)
+        kq = subprocess.run(["schtasks", "/run", "/tn", r"\VibervnContextEngine"], capture_output=True, timeout=5)
+        if kq.returncode != 0:
+            # Uu tien 2: Khoi chay qua start-context-engine.ps1
+            subprocess.run(["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-File", r"C:\Tools\start-context-engine.ps1"], capture_output=True, timeout=5)
+
+        for _ in range(12):
             time.sleep(0.35)
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
