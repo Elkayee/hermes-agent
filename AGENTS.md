@@ -45,6 +45,17 @@ past that); see the **routing table** at the end and read the area file before e
 
 ---
 
+## Context Engine & Search Policy (ONE-WAY COUPLING)
+
+> [!IMPORTANT]
+> **QUY TẮC KÍCH HOẠT CONTEXT ENGINE MỘT CHIỀU (ONE-WAY COUPLING):**
+> 1. **Khi Agent kích hoạt Grep / Search (`grep_search`, `find_by_name`) $\rightarrow$ BẮT BUỘC KÍCH HOẠT CONTEXT ENGINE ĐI KÈM**:
+>    - Grep/Search thuần túy là so khớp chuỗi ký tự mù cấu trúc (dumb text match). Do đó, mỗi khi dùng grep/search, Agent **bắt buộc phải kích hoạt kèm Context Engine (`codebase-retrieval` / `file-retrieval`)** để soi chiếu đồ thị gọi hàm (Call Graph), phân tích Tree-sitter AST và vector similarity, tránh việc sửa sai hoặc bỏ sót bối cảnh kiến trúc.
+> 2. **Ngược lại, khi Agent đã dùng Context Engine $\rightarrow$ KHÔNG CẦN kích hoạt Grep / Search**:
+>    - Khi Agent đã chủ động truy vấn ngữ nghĩa qua Context Engine, **hoàn toàn không cần bật thêm Grep/Search**. Bản thân Context Engine đã tự đủ khả năng định vị symbol, mở rộng quan hệ caller/callee và trích xuất đoạn mã tối ưu mà không cần tới grep text thô.
+
+---
+
 ## What Hermes Is
 
 Hermes is a personal AI agent that runs the same agent core across a CLI, a messaging
