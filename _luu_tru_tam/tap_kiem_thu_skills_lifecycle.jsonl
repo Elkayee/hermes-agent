@@ -1,0 +1,6 @@
+{"id": "TC_SKILL_01_REVERSE", "prompt": "Dịch ngược file PE x64 và phân tích hàm giải mã payload trong Ghidra", "expected": "DUNG_SKILL_CU (['ghidra-reverse', 'reverse-engineering'])", "loai_tap": "Vòng đời Skill"}
+{"id": "TC_SKILL_02_REVIEW", "prompt": "Review code pull request mới nhất để kiểm tra vi phạm chuẩn thiết kế và convention", "expected": "DUNG_SKILL_CU (['code-review'])", "loai_tap": "Vòng đời Skill"}
+{"id": "TC_SKILL_03_TDD", "prompt": "Áp dụng phương pháp test-driven development viết unit test trước khi viết logic", "expected": "DUNG_SKILL_CU (['tdd', 'test-driven-development'])", "loai_tap": "Vòng đời Skill"}
+{"id": "TC_SKILL_04_FIND_COMMUNITY", "prompt": "Tìm kiếm trên skills.sh xem cộng đồng có skill nào hỗ trợ kết nối database ClickHouse không", "expected": "TIM_SKILL_NGOAI (['find-skills'])", "loai_tap": "Vòng đời Skill"}
+{"id": "TC_SKILL_05_BUILD_EXPLICIT", "prompt": "Hãy tạo skill mới tên là bsod-crash-analysis chuyên phân tích file memory.dmp khi Windows bị màn hình xanh", "expected": "BUILD_SKILL_MOI (Build)", "loai_tap": "Vòng đời Skill"}
+{"id": "TC_SKILL_06_BUILD_GAP", "prompt": "Xây dựng pipeline chuyên biệt tự động audit smart contract Solidity và tối ưu hóa gas limit EVM nhiều bước", "expected": "BUILD_SKILL_MOI (Build)", "loai_tap": "Vòng đời Skill"}

@@ -1,0 +1,52 @@
+{
+  "tong_so": 3,
+  "so_dat": 3,
+  "ti_le_dat": 100.0,
+  "tong_thoi_gian": 18.54,
+  "tong_token": 50537,
+  "tong_chi_phi": 0.007623,
+  "chi_tiet": [
+    {
+      "id": "TC_02_THU_DO",
+      "dat": true,
+      "thoi_gian": 8.19,
+      "ma_loi": 0,
+      "token_vao": 16801,
+      "token_ra": 74,
+      "token_suy_nghi": 73,
+      "token_cache": 0,
+      "tong_token": 16875,
+      "chi_phi": 0.002565,
+      "so_vong": 1,
+      "phan_hoi": "Tokyo"
+    },
+    {
+      "id": "TC_01_TOAN",
+      "dat": true,
+      "thoi_gian": 12.27,
+      "ma_loi": 0,
+      "token_vao": 16820,
+      "token_ra": 3,
+      "token_suy_nghi": 0,
+      "token_cache": 0,
+      "tong_token": 16823,
+      "chi_phi": 0.002525,
+      "so_vong": 1,
+      "phan_hoi": "625"
+    },
+    {
+      "id": "TC_03_CODE",
+      "dat": true,
+      "thoi_gian": 10.34,
+      "ma_loi": 0,
+      "token_vao": 16824,
+      "token_ra": 15,
+      "token_suy_nghi": 0,
+      "token_cache": 0,
+      "tong_token": 16839,
+      "chi_phi": 0.002533,
+      "so_vong": 1,
+      "phan_hoi": "```python\ndef chao():\n    return 'hello'\n```"
+    }
+  ]
+}

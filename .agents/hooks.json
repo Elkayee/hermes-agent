@@ -1,0 +1,12 @@
+{
+  "harness-trigger": {
+    "enabled": true,
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "python scripts/kich_hoat_harness_tu_dong.py",
+        "timeout": 15
+      }
+    ]
+  }
+}

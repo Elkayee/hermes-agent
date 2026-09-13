@@ -1,0 +1,83 @@
+{
+  "thoi_diem": 1789281102.315385,
+  "tong_so": 6,
+  "so_dat": 6,
+  "ti_le_dat": 100.0,
+  "tong_thoi_gian": 0.012,
+  "thoi_gian_tb": 0.002,
+  "tong_token": 0,
+  "tong_chi_phi": 0.0,
+  "chi_tiet": [
+    {
+      "id": "TC_SKILL_01_REVERSE",
+      "dat": true,
+      "thoi_gian": 0.0038,
+      "token_vao": 0,
+      "token_ra": 0,
+      "token_suy_nghi": 0,
+      "tong_token": 0,
+      "chi_phi": 0.0,
+      "phan_hoi": "Quyet dinh: DUNG_SKILL_CU -> Skill: ghidra-reverse (Khop voi skill noi bo hien co 'ghidra-reverse' voi diem tin cay cao (25).)"
+    },
+    {
+      "id": "TC_SKILL_02_REVIEW",
+      "dat": true,
+      "thoi_gian": 0.0015,
+      "token_vao": 0,
+      "token_ra": 0,
+      "token_suy_nghi": 0,
+      "tong_token": 0,
+      "chi_phi": 0.0,
+      "phan_hoi": "Quyet dinh: DUNG_SKILL_CU -> Skill: code-review (Khop voi skill noi bo hien co 'code-review' voi diem tin cay cao (35).)"
+    },
+    {
+      "id": "TC_SKILL_03_TDD",
+      "dat": true,
+      "thoi_gian": 0.0014,
+      "token_vao": 0,
+      "token_ra": 0,
+      "token_suy_nghi": 0,
+      "tong_token": 0,
+      "chi_phi": 0.0,
+      "phan_hoi": "Quyet dinh: DUNG_SKILL_CU -> Skill: test-driven-development (Khop voi skill noi bo hien co 'test-driven-development' voi diem tin cay cao (26).)"
+    },
+    {
+      "id": "TC_SKILL_04_FIND_COMMUNITY",
+      "dat": true,
+      "thoi_gian": 0.0016,
+      "token_vao": 0,
+      "token_ra": 0,
+      "token_suy_nghi": 0,
+      "tong_token": 0,
+      "chi_phi": 0.0,
+      "phan_hoi": "Quyet dinh: TIM_SKILL_NGOAI -> Skill: find-skills (Khong khop skill noi bo nao dat nguong, kich hoat giao thuc find-skills tra cuu kho ngoai.)"
+    },
+    {
+      "id": "TC_SKILL_05_BUILD_EXPLICIT",
+      "dat": true,
+      "thoi_gian": 0.0019,
+      "token_vao": 0,
+      "token_ra": 0,
+      "token_suy_nghi": 0,
+      "tong_token": 0,
+      "chi_phi": 0.0,
+      "phan_hoi": "Quyet dinh: BUILD_SKILL_MOI -> Skill: None (Nguoi dung yeu cau tuong minh dong goi/tao skill moi.)"
+    },
+    {
+      "id": "TC_SKILL_06_BUILD_GAP",
+      "dat": true,
+      "thoi_gian": 0.0018,
+      "token_vao": 0,
+      "token_ra": 0,
+      "token_suy_nghi": 0,
+      "tong_token": 0,
+      "chi_phi": 0.0,
+      "phan_hoi": "Quyet dinh: BUILD_SKILL_MOI -> Skill: None (Tac vu ky thuat phuc tap nhung chua co skill chuyen biet dat nguong tin cay (Capability Gap).)"
+    }
+  ],
+  "vong_doi_build_moi": {
+    "ten_skill": "bsod-crash-analysis",
+    "tim_thay_sau_build": true,
+    "kich_hoat_thanh_cong": true
+  }
+}

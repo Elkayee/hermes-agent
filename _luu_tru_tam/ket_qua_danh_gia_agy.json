@@ -1,0 +1,26 @@
+{
+  "tong_so": 2,
+  "so_dat": 2,
+  "ti_le_dat": 100.0,
+  "tong_token": 33720,
+  "chi_tiet": [
+    {
+      "id": "TC_01_TOAN_HOC",
+      "dat": true,
+      "thoi_gian": 10.25,
+      "ma_loi": 0,
+      "so_token": 16825,
+      "so_luot": 1,
+      "phan_hoi": "1000"
+    },
+    {
+      "id": "TC_02_THU_DO",
+      "dat": true,
+      "thoi_gian": 7.12,
+      "ma_loi": 0,
+      "so_token": 16895,
+      "so_luot": 1,
+      "phan_hoi": "Hà Nội"
+    }
+  ]
+}

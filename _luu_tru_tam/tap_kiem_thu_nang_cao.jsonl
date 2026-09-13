@@ -1,0 +1,3 @@
+{"id": "TC_01_TOAN", "prompt": "Giai phep tinh: 25 * 25 bang bao nhieu? Chi tra loi so.", "expected": "625"}
+{"id": "TC_02_THU_DO", "prompt": "Thu do cua Nhat Ban la gi? Chi tra loi ten thanh pho.", "expected": "Tokyo"}
+{"id": "TC_03_CODE", "prompt": "Viet mot ham Python ten la 'chao' tra ve 'hello'. Chi in ma ham khong giai thich.", "expected": "def chao"}
