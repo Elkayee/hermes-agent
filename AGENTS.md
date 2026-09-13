@@ -7,6 +7,44 @@ past that); see the **routing table** at the end and read the area file before e
 
 **Never give up on the right solution.**
 
+---
+
+## Git Architecture & Workflow Rules (DOWNSTREAM PERSONAL HARNESS)
+
+> [!CRITICAL]
+> **STRICT REPO & GIT WORKFLOW RULES FOR AI AGENTS (DO NOT CONFUSE):**
+>
+> 1. **Repository Identity & Ownership**:
+>    - **`origin`**: `https://github.com/Elkayee/hermes-agent.git`
+>      - This is **Elkayee's private downstream personal harness repository**.
+>      - All active development, custom harnesses, telemetry scripts, dashboard, and private optimizations belong here.
+>      - **ALL commits and pushes MUST go exclusively to `origin`** (default tracking: `origin/main`).
+>    - **`upstream`**: `https://github.com/NousResearch/hermes-agent.git`
+>      - This is the **public original repository of NousResearch**.
+>      - It is used **STRICTLY for FETCH / READ ONLY** to track and pull the latest core updates.
+>
+> 2. **STRICT PROHIBITION ON PULL REQUESTS**:
+>    - 🛑 **NEVER EVER create a Pull Request (PR) to `upstream` (`NousResearch/hermes-agent`)**.
+>    - This repository is an independent personal downstream harness, not an upstream contributor branch.
+>
+> 3. **Private vs Public Fetching Principle**:
+>    - `Elkayee/hermes-agent` can and should be kept **PRIVATE** for privacy and security.
+>    - A private repository **CAN ALWAYS** fetch from public upstream (`git fetch upstream main`) because Git operates at the protocol level: reading a public repository requires zero authentication or fork affiliation.
+>
+> 4. **Standard Sync & Update Workflow**:
+>    ```bash
+>    # Step 1: Fetch latest changes from upstream core
+>    git fetch upstream main
+>
+>    # Step 2: Integrate into local harness
+>    git merge upstream/main  # or cherry-pick specific commits
+>
+>    # Step 3: Push merged changes to private origin
+>    git push origin main
+>    ```
+
+---
+
 ## What Hermes Is
 
 Hermes is a personal AI agent that runs the same agent core across a CLI, a messaging
