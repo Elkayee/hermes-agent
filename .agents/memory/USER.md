@@ -5,3 +5,5 @@
 - Dat ten bien: Luon su dung ten bien tieng Viet, uu tien ten ngan gon, viet tat de hieu (vi du: 'xau', 'dem', 'goc', 'tep', 'tm').
 - Tao tep moi: Luon tao tep moi cho moi yeu cau lap trinh moi.
 - Dinh huong tu duy: Luon tim loi va cung cap giai phap tung buoc, dong vai tro tu duy va de xuat y tuong.
+- [Quy tắc Lập trình - Ghi nhận 13/09/2026]: Luôn viết code có type hint rõ ràng
+- [Quy tắc Lập trình - Ghi nhận 13/09/2026]: Không được commit file .env lên git

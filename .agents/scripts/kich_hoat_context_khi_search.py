@@ -32,8 +32,47 @@ def tim_goc_repo(duong_dan):
         return str(duong_dan)
 
 
+def dam_bao_context_engine_hoat_dong():
+    """Watchdog tu dong kiem tra va khoi dong lai Context Engine neu bi tat."""
+    import socket
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.25)
+            if s.connect_ex(('127.0.0.1', 6699)) == 0:
+                return True
+    except Exception:
+        pass
+
+    tep_bin = Path(r"C:\Tools\vibervn-context-engine\target\release\context-engine-rs.exe")
+    if not tep_bin.exists():
+        return False
+
+    import subprocess
+    try:
+        DETACHED_PROCESS = 0x00000008
+        CREATE_NO_WINDOW = 0x08000000
+        subprocess.Popen(
+            [str(tep_bin), "--port", "6699", "--bind", "127.0.0.1"],
+            creationflags=DETACHED_PROCESS | CREATE_NO_WINDOW,
+            close_fds=True
+        )
+        for _ in range(10):
+            time.sleep(0.35)
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.settimeout(0.2)
+                    if s.connect_ex(('127.0.0.1', 6699)) == 0:
+                        return True
+            except Exception:
+                pass
+    except Exception:
+        pass
+    return False
+
+
 def dam_bao_repo_da_index(goc_repo):
     """Tu dong dang ky va index kho moi vao Context Engine qua REST API neu chua co."""
+    dam_bao_context_engine_hoat_dong()
     try:
         goc_chuan = str(Path(goc_repo).resolve())
         # 1. Doc danh sach repos tu /api/config
